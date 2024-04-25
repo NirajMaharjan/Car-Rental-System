@@ -16,7 +16,9 @@ public class Car {
 
     //method to view all the available cars
     public static void viewAvailableCars(Connection connection){
+
         String query = "SELECT * FROM car where availability='true'";
+
         try{
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -35,8 +37,8 @@ public class Car {
                 car.color = resultSet.getString("color");
                 car.liscensePlate = resultSet.getInt("liscense_plate");
 
-                System.out.printf("|%-5d|%-10s|%-10s|%-10d|%-10s|%-15d|\n",car.id,car.make,car.model,car.year,car.color,car.liscensePlate);
-
+                System.out.printf("|%-5d|%-10s|%-10s|%-10d|%-10s|%-16d|\n",car.id,car.make,car.model,car.year,car.color,car.liscensePlate);
+                //-5d states that | yo vanda 5 space agadi deki suru garne
             }
             System.out.println("+-----+----------+----------+----------+----------+----------------+");
 
@@ -45,3 +47,6 @@ public class Car {
         }
     }
 }
+
+
+
