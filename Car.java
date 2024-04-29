@@ -46,7 +46,71 @@ public class Car {
             System.out.println(e.getMessage());
         }
     }
+
+
+    public static boolean isValidCarId(int car_ID,Connection connection){
+        boolean isValid = false;
+        String query = "select count(*) as count from car where carID= ? and availability=0";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, car_ID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int count = rs.getInt("count");
+                    isValid = count > 0; // If count > 0, car with the given ID exists
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return isValid;
+
+    }
+
+
+    public static void changeAvailability(int car_ID,Connection connection){
+        
+        String query = "UPDATE car SET availability=? WHERE carID=? ";
+
+        try(PreparedStatement ps = connection.prepareStatement(query)){
+            ps.setInt(1,1);
+            ps.setInt(2,car_ID) ;
+            int affectedRowsCount = ps.executeUpdate();
+            if(affectedRowsCount == 0 ){
+                System.out.println( "No rows were updated for availability.");
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static boolean checkAvailability(int carID,Connection connection){
+        boolean isAvailable = true;
+        String query = "select availability from car where carID=?";//return garda first check if its available or not
+    
+        try(PreparedStatement ps = connection.prepareStatement(query)){
+            ps.setInt(1,carID);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                isAvailable = rs.getBoolean("availability");
+                //rs.getBoolean garda 0 lai false 1 lai true 
+                //but mathi select * from car where availabity = true garda 0 lai true 
+            }else{
+                
+                throw new RuntimeException("Car not found!");
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return !isAvailable;
+    
+    }
 }
+
+
 
 
 

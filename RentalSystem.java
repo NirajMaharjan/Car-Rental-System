@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+
 public class RentalSystem {
 
     //Menu lists
@@ -28,13 +29,37 @@ public class RentalSystem {
             try{
                 connection = ConnectDB.getConnection();
                 switch (ch) {
+
+                    //view all the available cars only
                     case 1:
                             
                          Car.viewAvailableCars(connection);
                         break;
                     
+                    /*
+                     * car renting process
+                     * asks the customer liscense number -> if not existing customer then ask all the ddetails
+                     * gets the car id and customer id
+                     * change the availability of corresponding car id to false
+                     * records the rent in rental table
+                     */
                     case 2:
-                        Customer.askDetails(scan, connection);
+                        int customer_ID=Customer.askDetails(scan, connection);
+                        if(customer_ID!= -1){
+                            System.out.println("Enter the Car ID: ");
+                            int car_ID = scan.nextInt();
+                            if(Car.isValidCarId(car_ID,connection) && Car.checkAvailability(car_ID,connection)){
+                                Car.changeAvailability(car_ID, connection);
+                                Rental.rentCar(customer_ID,car_ID,connection);
+
+                            }
+                            else{
+                                boolean check=Car.checkAvailability(car_ID, connection);  
+                                System.out.println(check);                    
+                                System.out.println("Invalid Car id");
+                            }
+                        }
+                        
                         break;
                     
                     case 0:
@@ -54,6 +79,7 @@ public class RentalSystem {
 
     }   
 }
+
 
 
 
