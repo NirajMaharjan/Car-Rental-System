@@ -62,6 +62,25 @@ public class RentalSystem {
                         
                         break;
                     
+
+                    /*return functionalities 
+                     * 1. ask the liscense plate of the car that is rented
+                     * 2. check if the plate is valid  or not
+                     * 3. check the availability of that car 
+                     * 4. proceed only if it is false
+                     * 5. change the availability to true
+                     * 6. calculate the total cost by subtracting the date  from current date
+                     * 7. return date must be current timestamp  and also update the cost in rental table
+                    */
+                    case 3:
+                        
+                        break;
+
+
+                    //showing rental history (inner join of all tables)
+                    case 4:
+                        Rental.showRentalHistory(connection);
+                        break;
                     case 0:
                         scan.close();
                         System.exit(1);
