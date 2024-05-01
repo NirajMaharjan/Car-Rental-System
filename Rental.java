@@ -35,12 +35,13 @@ public class Rental {
         try(PreparedStatement ps = connection.prepareStatement(query)){
             ResultSet rs = ps.executeQuery();
 
-            if(rs.next()){
-                System.out.println("+-----+--------------+-----------------+------------+----------+--------+--------------|-------------|-------|");
-                System.out.println("| ID  |  Customer ID |  Customer Name  |  Car ID    |  Make    | Model  | Rental Date  | Return Date | Cost  |");
-                System.out.println("+-----+--------------+-----------------+------------+----------+--------+--------------|-------------|-------|");
-                System.out.printf("|%-5d|%-14d|%-17s|-11d|-11s|-11s|-15d|",rs.getInt("id"),rs.getInt(1),rs.getString("name"),rs.getInt(3),rs.getString(4),rs.getString(5),rs.getDate(6));
+            System.out.println("+-----+--------------+-----------------+------------+----------+----------+--------------+-------------+-------+");
+            System.out.println("| ID  |  Customer ID |  Customer Name  |  Car ID    |  Make    | Model    | Rental Date  | Return Date | Cost  |");
+            System.out.println("+-----+--------------+-----------------+------------+----------+----------+--------------+-------------+-------+");
+            while(rs.next()){
+                System.out.printf("|%-5d|%-14d|%-17s|%-12d|%-10s|%-10s|%-14s|%-13s|%-7d|\n",rs.getInt(1),rs.getInt(2),rs.getString(3),rs.getInt(4),rs.getString(5),rs.getString(6),rs.getDate(7),rs.getDate(8),rs.getInt(9));
             }
+            System.out.println("+-----+--------------+-----------------+------------+----------+----------+--------------+-------------+-------+");
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
