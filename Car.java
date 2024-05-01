@@ -108,7 +108,33 @@ public class Car {
         return !isAvailable;
     
     }
+    public static void searchByMake(String  make, Connection conn){
+        String query ="SELECT * FROM Car WHERE Make = ?";
+        try ( PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1,make);
+            ResultSet rs=stmt.executeQuery();
+    
+            if(!rs.next()){
+                System.out.println("No  cars with the make "+make+" were found.");
+                return;
+            }
+            
+            System.out.println("+-----+----------+----------+----------+----------+----------------+");
+            System.out.println("| ID  |  Make    |  Model   |  Year    |  Color   | Liscense Plate |");
+            System.out.println("+-----+----------+----------+----------+----------+----------------+");
+    
+            while(rs.next()) {
+                System.out.printf("|%-5d|%-10s|%-10s|%-10d|%-10s|%-16d|\n",rs.getInt(1),rs.getString(2),rs.getString(3),rs.getInt(4),rs.getString(5),rs.getInt(6));
+            }
+            System.out.println("+-----+----------+----------+----------+----------+----------------+");
+    
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
+
+
 
 
 
