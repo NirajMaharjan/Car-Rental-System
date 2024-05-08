@@ -71,11 +71,11 @@ public class Car {
 
     public static void changeAvailability(int car_ID,Connection connection){
         
-        String query = "UPDATE car SET availability=? WHERE carID=? ";
+        String query = "UPDATE car SET availability = CASE availability WHEN 0 THEN 1 ELSE 0 END where carID = ?; "; //not toggles avaibility
 
         try(PreparedStatement ps = connection.prepareStatement(query)){
-            ps.setInt(1,1);
-            ps.setInt(2,car_ID) ;
+            
+            ps.setInt(1,car_ID) ;
             int affectedRowsCount = ps.executeUpdate();
             if(affectedRowsCount == 0 ){
                 System.out.println( "No rows were updated for availability.");
@@ -109,7 +109,7 @@ public class Car {
     
     }
     public static void searchByMake(String  make, Connection conn){
-        String query ="SELECT * FROM Car WHERE Make = ?";
+        String query ="SELECT * FROM Car WHERE Make = ? and  availability = 0";
         try ( PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1,make);
             ResultSet rs=stmt.executeQuery();
@@ -122,15 +122,22 @@ public class Car {
             System.out.println("+-----+----------+----------+----------+----------+----------------+");
             System.out.println("| ID  |  Make    |  Model   |  Year    |  Color   | Liscense Plate |");
             System.out.println("+-----+----------+----------+----------+----------+----------------+");
-    
-            while(rs.next()) {
+            
+            //while rs.next() garda duichoti loop chalyo; if wala rs.next le first row point ani yeta while ko rs.next le second row ie first row is skipped
+
+            do {
                 System.out.printf("|%-5d|%-10s|%-10s|%-10d|%-10s|%-16d|\n",rs.getInt(1),rs.getString(2),rs.getString(3),rs.getInt(4),rs.getString(5),rs.getInt(6));
-            }
+            }while(rs.next());
             System.out.println("+-----+----------+----------+----------+----------+----------------+");
     
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+
+    public static void returnCar(int carID,Connection connection){
+
     }
 }
 

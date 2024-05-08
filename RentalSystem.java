@@ -34,6 +34,8 @@ public class RentalSystem {
                     case 1:
 
                         Car.viewAvailableCars(connection);
+                        
+
                         break;
 
                     /*
@@ -64,17 +66,28 @@ public class RentalSystem {
 
                     /*
                      * return functionalities
-                     * 1. ask the liscense plate of the car that is rented
-                     * 2. check if the plate is valid or not
-                     * 3. check the availability of that car
-                     * 4. proceed only if it is false
-                     * 5. change the availability to true
+                     * ask cust id and car id => check in rental table 
+                     * select id where cust id =  x && car id=y 
+                     * toggle availability using input car id(func in car class)
+                     
                      * 6. calculate the total cost by subtracting the date from current date
                      * 7. return date must be current timestamp and also update the cost in rental
                      * table
                      */
                     case 3:
+                        System.out.println("Enter the car ID: ");
+                        int carID = scan.nextInt();
+                        System.out.println("Enter the customer ID: ");
+                        int custID = scan.nextInt();
 
+                        int transactionID = Rental.checkValidTransaction(carID, custID, connection);
+                        if(transactionID==0){
+                            System.out.println("No any renting  record found for this car or customer.");
+                            break;
+                        }
+                        Rental.returnCar(transactionID, connection);
+                        System.out.println("successful return");
+                        Car.changeAvailability(carID, connection);
                         break;
 
                     // showing rental history (inner join of all tables)

@@ -1,4 +1,6 @@
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.Period;
+import java.sql.Date;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +10,7 @@ public class Rental {
     private int car_ID;
     private int customer_ID;
     private float total_cost;
+    private static float dailyRate = 200;
 
     public static void rentCar(int customer_ID, int car_ID, Connection connection) {
         String query = "INSERT INTO rental  (customer_id,carID) VALUES(?,?)";
@@ -48,7 +51,83 @@ public class Rental {
 
     }
 
-    public static void returnCar(int car_id, Connection connection) {
+    public static int checkValidTransaction(int carID,int custID,Connection connection){
+        String query = "select id from rental where carID=? and customer_id = ?";
+        try(PreparedStatement ps = connection.prepareStatement(query)){
+            ps.setInt(1,carID) ;
+            ps.setInt(2,custID);
+            ResultSet rs = ps.executeQuery();
 
+            if(rs.next()){
+                return  rs.getInt("id"); //returns the ID of existing transaction
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
+
+    private static void updateTotal(LocalDate startDate,int transaction_id,Connection connection){
+        //get current date
+        LocalDate currentDate = LocalDate.now();
+
+
+
+        // Calculate the difference between the current date and the start date
+        Period period = Period.between(startDate, currentDate);
+
+        // Calculate the total number of days
+        int totalDays = period.getDays();
+
+        // Calculate the total cost
+        float totalCost = totalDays * dailyRate;
+
+        String updatePrice = "update rental set total_cost = ? where id = ? ";
+        try(PreparedStatement ps = connection.prepareStatement(updatePrice)){
+            ps.setFloat(1,totalCost);
+            ps.setInt(2,transaction_id);
+            int rowAffected = ps.executeUpdate();
+            if (rowAffected > 0){
+                return;
+            }
+            else{
+                System.out.println("Error updating price");
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        
+    }
+
+
+    public static void returnCar(int transaction_id, Connection connection) {
+        String update_query="update rental set return_date = CURRENT_DATE where id = ?";
+        String getDate = "select rental_date from rental where id = ?";
+        try ( PreparedStatement pstmt = connection.prepareStatement(update_query)) {
+            pstmt.setInt(1,transaction_id);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected >  0) {
+               
+                try(PreparedStatement ps = connection.prepareStatement(getDate)){
+                    ps.setInt(1,transaction_id);
+                    ResultSet resultSet = ps.executeQuery();
+                    
+                    if(resultSet.next()){
+                        
+                        LocalDate rentalDate=resultSet.getDate(1).toLocalDate();
+                        System.out.println(rentalDate);
+                        
+                        updateTotal(rentalDate,transaction_id,connection);  
+                    }
+        
+                }catch(SQLException e){
+                    System.out.println("catch vitrta");
+                    System.out.println(e.getMessage());
+                }
+            }
+        }catch(SQLException e){
+            System.out.println("last ko catch ho");
+            System.out.println(e.getMessage());
+        }
     }
 }
